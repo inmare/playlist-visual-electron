@@ -1,0 +1,29 @@
+@use "font" as *;
+@use "color" as *;
+
+.setting-input {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  margin: 5px 10px;
+
+  .setting-input-label {
+    font-family: "Gyeonggi Title", sans-serif;
+    font-weight: 500;
+    color: $color-white;
+    margin: 0 0 8px 5px;
+  }
+
+  .setting-input-textarea {
+    outline: none;
+    border: transparent;
+    font-family: "Pretendard JP Variable", sans-serif;
+    font-weight: 500;
+    border-radius: 5px;
+    padding: 10px;
+    resize: none;
+    height: 60px;
+    display: block;
+    width: 100%;
+  }
+}

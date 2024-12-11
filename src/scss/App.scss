@@ -1,0 +1,35 @@
+@use "color" as *;
+
+.wrapper {
+  display: grid;
+  grid-template: 1fr 1fr / 1fr 1fr;
+  height: 100vh;
+  gap: 1px;
+}
+.preview-wrapper {
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
+  width: 100%;
+  height: 100%;
+  background-image: url("../assets/images/Transparent-bg.png");
+  background-size: 20px 20px;
+  background-repeat: repeat;
+  overflow: hidden;
+}
+
+.settings-wrapper {
+  grid-column: 2 / 3;
+  grid-row: 1 / 3;
+  width: 100%;
+  height: 100%;
+  background-color: $color-bg;
+  overflow: hidden auto;
+}
+
+.song-list-wrapper {
+  grid-column: 1 / 2;
+  grid-row: 2 / 3;
+  background-color: $color-bg;
+  padding: 5px 10px;
+  overflow: hidden auto;
+}
