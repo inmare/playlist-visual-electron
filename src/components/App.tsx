@@ -29,10 +29,15 @@ const defaultSongs: Song[] = [
 ];
 
 export default function App() {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const appRef = useRef<PIXI.Application | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(undefined);
+  const appRef = useRef<PIXI.Application>(undefined);
+  const divRef = useRef<HTMLDivElement>(undefined);
   const [songs, setSongs] = useState<Song[]>(defaultSongs);
   const [songIdx, setSongIdx] = useState(-1);
+  const [canvasStyle, setCanvasStyle] = useState({
+    width: undefined,
+    height: undefined,
+  });
 
   const project = new Project(setSongs);
   const preview = new Preview();
@@ -46,6 +51,21 @@ export default function App() {
       const app = appRef.current;
       preview.init(app, canvas);
     }
+
+    const handleResize = () => {
+      const div = divRef.current;
+      if (!div) return;
+
+      const isWidthBigger = div.clientWidth / div.clientHeight > 16 / 9;
+
+      setCanvasStyle({
+        width: isWidthBigger ? "" : "95%",
+        height: isWidthBigger ? "95%" : "",
+      });
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
   }, []);
 
   const handlePreview = (name: string, value: string) => {
@@ -81,8 +101,11 @@ export default function App() {
   return (
     <>
       <div className="wrapper">
-        <div className="preview-wrapper">
-          <canvas ref={canvasRef} style={{ width: "640px", height: "360px" }} />
+        <div className="preview-wrapper" ref={divRef}>
+          <canvas
+            ref={canvasRef}
+            style={{ width: canvasStyle.width, height: canvasStyle.height }}
+          />
         </div>
         <div className="settings-wrapper">
           <Settings
@@ -99,6 +122,7 @@ export default function App() {
                 key={index}
                 song={song}
                 index={index}
+                songIdx={songIdx}
                 updateSong={handleSong}
               />
             );
