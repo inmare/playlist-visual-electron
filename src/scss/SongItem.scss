@@ -13,3 +13,10 @@
   border: 1px solid $color-900;
   border-left: 10px solid $color-700;
 }
+
+.song-item-selected {
+  background-color: $color-200;
+  border: 1px solid $color-600;
+  border-left: 10px solid $color-500;
+  color: $color-black;
+}
