@@ -15,6 +15,9 @@
   background-size: 20px 20px;
   background-repeat: repeat;
   overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .settings-wrapper {
