@@ -43,15 +43,25 @@ export default function Settings(props: {
     },
   ];
 
+  const handleFileInput = async () => {
+    const fileName = await window.electronAPI.loadImage();
+    if (fileName) console.log(fileName);
+  };
+
   return (
     <>
       <div className="settings">
-        <p>이미지 파일</p>
+        <div
+          style={{ color: "#ffffff", backgroundColor: "blue" }}
+          onClick={handleFileInput}
+        >
+          <p>이미지 파일</p>
+        </div>
         {textList.map((item: TextInput, index: number) => {
-          const content =
-            songIdx < 0 || songs[songIdx][item.value] == null
-              ? ""
-              : songs[songIdx][item.value];
+          let content = "";
+          if (songIdx >= 0) {
+            content = (songs[songIdx][item.value] as string) ?? "";
+          }
           return (
             <SettingInput
               key={String(index)}
