@@ -8,7 +8,14 @@ declare const MAIN_WINDOW_VITE_NAME: string;
 
 async function handleFileOpen(): Promise<string | null> {
   const { canceled, filePaths } = await dialog.showOpenDialog({});
-  if (!canceled) return filePaths[0];
+  // 개발 중인 경우에는 절대 경로를 상대 경로로 변경해서 반환 함
+  const isDev = process.env.NODE_ENV === "development";
+  if (!canceled) {
+    if (isDev) {
+      return filePaths[0].replace(process.cwd(), ".");
+    }
+    return filePaths[0];
+  }
   return null;
 }
 
