@@ -2,27 +2,19 @@ import * as PIXI from "pixi.js";
 import { DropShadowFilter } from "pixi-filters";
 import DefaultImage from "@assets/images/DefaultImage.png";
 import { TextInput } from "@ts/song";
-
-const loadImage = (url: string) => {
-  return new Promise((resolve, reject) => {
-    const image = new Image();
-    image.onload = () => {
-      const canvas = document.createElement("canvas");
-      const context = canvas.getContext("2d");
-      if (!context) {
-        reject("Canvas context is null");
-        return;
-      }
-      canvas.width = image.width;
-      canvas.height = image.height;
-      context.drawImage(image, 0, 0);
-      resolve(canvas);
-    };
-    image.src = url;
-  });
-};
+import { loadImage } from "@ts/utils";
 
 export class Preview {
+  bgImageLabel: string;
+  imageLabel: string;
+  textContainerLabel: string;
+
+  constructor() {
+    this.bgImageLabel = "Background Image";
+    this.imageLabel = "Image";
+    this.textContainerLabel = "Text Container";
+  }
+
   async init(app: PIXI.Application, canvas: HTMLCanvasElement) {
     app.init({
       canvas: canvas,
@@ -34,16 +26,18 @@ export class Preview {
     const canvasImage = await loadImage(DefaultImage);
     const texture = PIXI.Texture.from(canvasImage);
     const bgSprite = new PIXI.Sprite(texture);
-    bgSprite.label = "Background image";
+    bgSprite.label = this.bgImageLabel;
     bgSprite.scale.set(1.5);
     app.stage.addChild(bgSprite);
 
     const sprite = new PIXI.Sprite(texture);
-    sprite.label = "Image";
+    sprite.label = this.imageLabel;
     sprite.filters = [new DropShadowFilter()];
     app.stage.addChild(sprite);
 
-    const textContainer = new PIXI.Container({ label: "Text container" });
+    const textContainer = new PIXI.Container({
+      label: this.textContainerLabel,
+    });
     textContainer.filters = [
       new DropShadowFilter({
         offset: new PIXI.Point(0, 0),
@@ -73,5 +67,22 @@ export class Preview {
       text.y = textStyle.fontSize * index;
       textContainer.addChild(text);
     });
+  }
+
+  updateText(app: PIXI.Application, name: string, value: string) {
+    const textContainer = app.stage.getChildByName(
+      this.textContainerLabel
+    ) as PIXI.Container;
+    const text = textContainer.getChildByName(name) as PIXI.Text;
+    text.text = value;
+  }
+
+  updateImage(app: PIXI.Application, canvas: HTMLCanvasElement) {
+    // TODO: 이미지 자동 스케일링 코드 추가
+    const image = app.stage.getChildByName(this.imageLabel) as PIXI.Sprite;
+    const bgImage = app.stage.getChildByName(this.bgImageLabel) as PIXI.Sprite;
+    const texture = PIXI.Texture.from(canvas);
+    image.texture = texture;
+    bgImage.texture = texture;
   }
 }
