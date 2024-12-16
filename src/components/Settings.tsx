@@ -1,18 +1,29 @@
 import SettingInput from "@components/SettingInput";
 import { Song } from "@/ts/song";
 import "@scss/Settings.scss";
+import { loadImage } from "@/ts/utils";
+import { useState } from "react";
 
 export default function Settings(props: {
   songs: Song[];
   songIdx: number;
   updateProject: (songIdx: number, name: string, value: string) => void;
-  updatePreview: (name: string, value: string) => void;
+  updatePreviewText: (name: string, value: string) => void;
+  updatePreviewImage: (canvas: HTMLCanvasElement) => void;
 }) {
-  const { songs, songIdx, updateProject, updatePreview } = props;
+  const {
+    songs,
+    songIdx,
+    updateProject,
+    updatePreviewText,
+    updatePreviewImage,
+  } = props;
+
+  const [imagePath, setImagePath] = useState<string>("이미지 경로");
 
   const handleUpdate = (name: string, value: string) => {
     updateProject(songIdx, name, value);
-    updatePreview(name, value);
+    updatePreviewText(name, value);
   };
 
   type TextInput = {
@@ -45,17 +56,37 @@ export default function Settings(props: {
 
   const handleFileInput = async () => {
     const fileName = await window.electronAPI.loadImage();
-    if (fileName) console.log(fileName);
+    if (!fileName) return;
+
+    setImagePath(fileName);
+    const canvas = await loadImage(fileName);
+    updatePreviewImage(canvas);
   };
 
   return (
     <>
       <div className="settings">
         <div
-          style={{ color: "#ffffff", backgroundColor: "blue" }}
-          onClick={handleFileInput}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
+          }}
         >
-          <p>이미지 파일</p>
+          <button
+            onClick={handleFileInput}
+            style={{ color: "#ffffff", backgroundColor: "blue" }}
+          >
+            이미지 파일
+          </button>
+          <textarea
+            // name=""
+            // id=""
+            disabled
+            rows={1}
+            value={imagePath}
+            style={{ resize: "none" }}
+          />
         </div>
         {textList.map((item: TextInput, index: number) => {
           let content = "";
