@@ -68,15 +68,18 @@ export default function App() {
     window.addEventListener("resize", handleResize);
   }, []);
 
-  const handlePreview = (name: string, value: string) => {
+  const handlePreviewText = (name: string, value: string) => {
     const app = appRef.current;
     if (!app) return;
 
-    const textContainer = app.stage.getChildByName(
-      "Text container"
-    ) as PIXI.Container;
-    const text = textContainer.getChildByName(name) as PIXI.Text;
-    text.text = value;
+    preview.updateText(app, name, value);
+  };
+
+  const handlePreviewImage = (canvas: HTMLCanvasElement) => {
+    const app = appRef.current;
+    if (!app) return;
+
+    preview.updateImage(app, canvas);
   };
 
   const handleProject = (songIdx: number, name: string, value: string) => {
@@ -93,7 +96,7 @@ export default function App() {
     for (const key in song) {
       if (TextInput.includes(key as keyof Song)) {
         const value = song[key] == null ? "" : song[key];
-        handlePreview(key, value as string);
+        handlePreviewText(key, value as string);
       }
     }
   };
@@ -112,7 +115,8 @@ export default function App() {
             songs={songs}
             songIdx={songIdx}
             updateProject={handleProject}
-            updatePreview={handlePreview}
+            updatePreviewText={handlePreviewText}
+            updatePreviewImage={handlePreviewImage}
           />
         </div>
         <div className="song-list-wrapper">
