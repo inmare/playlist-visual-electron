@@ -1,106 +1,106 @@
-import SettingInput from "@components/SettingInput";
-import { Song } from "@/ts/song";
+import { Song, SongText, TextInput } from "@ts/song";
 import "@scss/Settings.scss";
-import { loadImage } from "@/ts/utils";
-import { useState } from "react";
+import "@scss/SettingInput.scss";
+import { Preview } from "@ts/preview";
+import { Project } from "@ts/project";
+import * as PIXI from "pixi.js";
+import InputTextarea from "./InputTextarea";
 
-export default function Settings(props: {
+type InputSetting = {
+  uiText: string;
+  value: keyof SongText;
+  cols: number;
+};
+
+const textList: InputSetting[] = [
+  {
+    uiText: "곡 제목",
+    value: TextInput.songname,
+    cols: 2,
+  },
+  {
+    uiText: "번역된 곡 제목",
+    value: TextInput.songnameKor,
+    cols: 2,
+  },
+  {
+    uiText: "작곡가",
+    value: TextInput.composer,
+    cols: 2,
+  },
+  {
+    uiText: "코멘트",
+    value: TextInput.comment,
+    cols: 8,
+  },
+  {
+    uiText: "닉네임",
+    value: TextInput.nickname,
+    cols: 1,
+  },
+] as const;
+
+export default function Settings({
+  songs,
+  songIdx,
+  appRef,
+  preview,
+  project,
+}: {
   songs: Song[];
   songIdx: number;
-  updateProject: (songIdx: number, name: string, value: string) => void;
-  updatePreviewText: (name: string, value: string) => void;
-  updatePreviewImage: (canvas: HTMLCanvasElement) => void;
+  appRef: React.RefObject<PIXI.Application>;
+  preview: Preview;
+  project: Project;
 }) {
-  const {
-    songs,
-    songIdx,
-    updateProject,
-    updatePreviewText,
-    updatePreviewImage,
-  } = props;
-
-  const [imagePath, setImagePath] = useState<string>("이미지 경로");
+  const app = appRef.current;
 
   const handleUpdate = (name: string, value: string) => {
-    updateProject(songIdx, name, value);
-    updatePreviewText(name, value);
+    project.updateText(songs, songIdx, name as keyof SongText, value);
+    preview.updateText(app, name, value);
   };
-
-  type TextInput = {
-    ui: string;
-    value: string;
-  };
-
-  const textList: TextInput[] = [
-    {
-      ui: "곡 제목",
-      value: "songname",
-    },
-    {
-      ui: "번역된 곡 제목",
-      value: "songnameKor",
-    },
-    {
-      ui: "작곡가",
-      value: "composer",
-    },
-    {
-      ui: "코멘트",
-      value: "comment",
-    },
-    {
-      ui: "닉네임",
-      value: "nickname",
-    },
-  ];
 
   const handleFileInput = async () => {
-    const fileName = await window.electronAPI.loadImage();
-    if (!fileName) return;
+    if (songIdx < 0) return;
 
-    setImagePath(fileName);
-    const canvas = await loadImage(fileName);
-    updatePreviewImage(canvas);
+    const filePath = await window.electronAPI.loadImage();
+    if (!filePath) return;
+
+    await project.updateImage(songs, songIdx, filePath);
+    const texture = songs[songIdx].texture;
+    preview.updateImage(app, texture);
   };
 
   return (
     <>
       <div className="settings">
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-start",
-          }}
-        >
-          <button
-            onClick={handleFileInput}
-            style={{ color: "#ffffff", backgroundColor: "blue" }}
-          >
-            이미지 파일
-          </button>
-          <textarea
-            // name=""
-            // id=""
-            disabled
+        <div className="setting-input">
+          <button onClick={handleFileInput}>이미지 업로드</button>
+          <InputTextarea
+            uiText="이미지 경로"
+            value="imagePath"
+            editable={false}
+            content={songIdx >= 0 ? songs[songIdx].url ?? "" : ""}
             rows={1}
-            value={imagePath}
-            style={{ resize: "none" }}
           />
         </div>
-        {textList.map((item: TextInput, index: number) => {
+        {textList.map((item: InputSetting, index: number) => {
           let content = "";
           if (songIdx >= 0) {
             content = (songs[songIdx][item.value] as string) ?? "";
           }
+          const { uiText, value, cols } = item;
           return (
-            <SettingInput
-              key={String(index)}
-              uiText={item.ui}
-              value={item.value}
-              content={content as string}
-              update={handleUpdate}
-            />
+            <div className="setting-input" key={String(index)}>
+              <label htmlFor={value}>{uiText}</label>
+              <InputTextarea
+                uiText={uiText}
+                value={value}
+                rows={cols}
+                content={content}
+                update={handleUpdate}
+              />
+            </div>
           );
         })}
       </div>
