@@ -1,20 +1,31 @@
-interface Song {
+import * as PIXI from "pixi.js";
+
+interface SongText {
   songname: string;
   songnameKor: string | null;
   composer: string;
   comment: string;
   nickname: string;
-  startTime: number;
-  endTime: number;
-  [key: string]: string | number | null;
 }
 
-const TextInput: (keyof Song)[] = [
-  "songname",
-  "songnameKor",
-  "composer",
-  "comment",
-  "nickname",
-];
+const TextInput: Record<keyof SongText, keyof SongText> = {
+  songname: "songname",
+  songnameKor: "songnameKor",
+  composer: "composer",
+  comment: "comment",
+  nickname: "nickname",
+} as const;
 
-export { Song, TextInput };
+interface SongTime {
+  startTime: number;
+  endTime: number;
+}
+
+interface SongImage {
+  url: string | null;
+  texture: PIXI.Texture | null;
+}
+
+type Song = SongText & SongTime & SongImage;
+
+export { Song, SongText, TextInput };
