@@ -5,16 +5,6 @@ import { loadImage } from "./utils";
 export class Project {
   constructor(private setSongs: (songs: Song[]) => void) {}
 
-  // addSong(song: Song) {
-  //   this.songs.push(song);
-  // }
-
-  // updateProject(key: SongProperty, value: string) {
-  //   const song = { ...this.songs[0] };
-  //   song[key] = value;
-  //   this.setSongs([song]);
-  // }
-
   updateText(
     songs: Song[],
     songIdx: number,
