@@ -4,26 +4,25 @@
 .setting-input {
   display: flex;
   flex-direction: column;
-  align-items: stretch;
+  align-items: flex-start;
   margin: 5px 10px;
 
-  .setting-input-label {
+  label {
     font-family: "Gyeonggi Title", sans-serif;
     font-weight: 500;
     color: $color-white;
     margin: 0 0 8px 5px;
   }
 
-  .setting-input-textarea {
-    outline: none;
-    border: transparent;
-    font-family: "Pretendard JP Variable", sans-serif;
+  button {
+    font-family: "Gyeonggi Title", sans-serif;
     font-weight: 500;
+    background-color: $color-800;
+    color: $color-white;
     border-radius: 5px;
-    padding: 10px;
-    resize: none;
-    height: 60px;
-    display: block;
-    width: 100%;
+    outline: none;
+    border: none;
+    padding: 8px 10px;
+    margin: 8px 0 8px 0;
   }
 }
