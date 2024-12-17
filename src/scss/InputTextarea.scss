@@ -1,4 +1,5 @@
 @use "font" as *;
+@use "color" as *;
 
 .input-textarea {
   outline: none;
@@ -8,7 +9,10 @@
   border-radius: 5px;
   padding: 10px;
   resize: none;
-  // height: 60px;
   display: block;
   width: 100%;
+
+  &:disabled {
+    color: $color-gray;
+  }
 }
