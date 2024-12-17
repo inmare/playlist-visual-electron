@@ -1,0 +1,14 @@
+@use "font" as *;
+
+.input-textarea {
+  outline: none;
+  border: transparent;
+  font-family: "Pretendard JP Variable", sans-serif;
+  font-weight: 500;
+  border-radius: 5px;
+  padding: 10px;
+  resize: none;
+  // height: 60px;
+  display: block;
+  width: 100%;
+}
