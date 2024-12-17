@@ -5,7 +5,9 @@ import Settings from "@components/Settings";
 import SongItem from "./SongItem";
 import { Preview } from "@ts/preview";
 import { Project } from "@ts/project";
-import { Song, TextInput } from "@ts/song";
+import { Song, SongText, TextInput } from "@ts/song";
+import DefaultImage from "@assets/images/DefaultImage.png";
+import { loadImage } from "@/ts/utils";
 
 const defaultSongs: Song[] = [
   {
@@ -16,6 +18,8 @@ const defaultSongs: Song[] = [
     nickname: "이드",
     startTime: 0,
     endTime: 10,
+    url: null,
+    texture: null,
   },
   {
     songname: "からくりピエロ",
@@ -25,13 +29,22 @@ const defaultSongs: Song[] = [
     nickname: "강매",
     startTime: 10,
     endTime: 20,
+    url: null,
+    texture: null,
   },
 ];
+
+loadImage(DefaultImage).then((canvas) => {
+  const texture = PIXI.Texture.from(canvas);
+  for (const song of defaultSongs) {
+    song.texture = texture;
+  }
+});
 
 export default function App() {
   const canvasRef = useRef<HTMLCanvasElement>(undefined);
   const appRef = useRef<PIXI.Application>(undefined);
-  const divRef = useRef<HTMLDivElement>(undefined);
+  const previewRef = useRef<HTMLDivElement>(undefined);
   const [songs, setSongs] = useState<Song[]>(defaultSongs);
   const [songIdx, setSongIdx] = useState(-1);
   const [canvasStyle, setCanvasStyle] = useState({
@@ -49,11 +62,12 @@ export default function App() {
     if (!appRef.current) {
       appRef.current = new PIXI.Application();
       const app = appRef.current;
+
       preview.init(app, canvas);
     }
 
     const handleResize = () => {
-      const div = divRef.current;
+      const div = previewRef.current;
       if (!div) return;
 
       const isWidthBigger = div.clientWidth / div.clientHeight > 16 / 9;
@@ -68,24 +82,6 @@ export default function App() {
     window.addEventListener("resize", handleResize);
   }, []);
 
-  const handlePreviewText = (name: string, value: string) => {
-    const app = appRef.current;
-    if (!app) return;
-
-    preview.updateText(app, name, value);
-  };
-
-  const handlePreviewImage = (canvas: HTMLCanvasElement) => {
-    const app = appRef.current;
-    if (!app) return;
-
-    preview.updateImage(app, canvas);
-  };
-
-  const handleProject = (songIdx: number, name: string, value: string) => {
-    project.updateProject(songs, songIdx, name, value);
-  };
-
   const handleSong = (index: number) => {
     setSongIdx(index);
     const song: Song = songs[index];
@@ -93,18 +89,19 @@ export default function App() {
     const app = appRef.current;
     if (!app) return;
 
-    for (const key in song) {
-      if (TextInput.includes(key as keyof Song)) {
-        const value = song[key] == null ? "" : song[key];
-        handlePreviewText(key, value as string);
-      }
+    for (const key in TextInput) {
+      const isValueExist = song[key as keyof SongText] == null;
+      const value: string = isValueExist ? "" : song[key as keyof SongText];
+      preview.updateText(app, key, value);
     }
+
+    preview.updateImage(app, song.texture);
   };
 
   return (
     <>
       <div className="wrapper">
-        <div className="preview-wrapper" ref={divRef}>
+        <div className="preview-wrapper" ref={previewRef}>
           <canvas
             ref={canvasRef}
             style={{ width: canvasStyle.width, height: canvasStyle.height }}
@@ -114,9 +111,9 @@ export default function App() {
           <Settings
             songs={songs}
             songIdx={songIdx}
-            updateProject={handleProject}
-            updatePreviewText={handlePreviewText}
-            updatePreviewImage={handlePreviewImage}
+            appRef={appRef}
+            preview={preview}
+            project={project}
           />
         </div>
         <div className="song-list-wrapper">
