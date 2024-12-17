@@ -1,4 +1,6 @@
-import { Song } from "./song";
+import { Song, SongText } from "./song";
+import * as PIXI from "pixi.js";
+import { loadImage } from "./utils";
 
 export class Project {
   constructor(private setSongs: (songs: Song[]) => void) {}
@@ -13,9 +15,25 @@ export class Project {
   //   this.setSongs([song]);
   // }
 
-  updateProject(songs: Song[], songIdx: number, name: string, value: string) {
+  updateText(
+    songs: Song[],
+    songIdx: number,
+    name: keyof SongText,
+    value: string
+  ) {
     const song: Song[] = [...songs];
     song[songIdx][name] = value;
+    this.setSongs(song);
+  }
+
+  async updateImage(songs: Song[], songIdx: number, filePath: string) {
+    const song: Song[] = [...songs];
+    song[songIdx].url = filePath;
+
+    const canvas = await loadImage(filePath);
+    const texture = PIXI.Texture.from(canvas);
+    song[songIdx].texture = texture;
+
     this.setSongs(song);
   }
 }
