@@ -24,13 +24,13 @@ export class Preview {
     });
 
     const canvasImage = await loadImage(DefaultImage);
-    const texture = PIXI.Texture.from(canvasImage);
-    const bgSprite = new PIXI.Sprite(texture);
+    const defaultImage = PIXI.Texture.from(canvasImage);
+    const bgSprite = new PIXI.Sprite(defaultImage);
     bgSprite.label = this.bgImageLabel;
     bgSprite.scale.set(1.5);
     app.stage.addChild(bgSprite);
 
-    const sprite = new PIXI.Sprite(texture);
+    const sprite = new PIXI.Sprite(defaultImage);
     sprite.label = this.imageLabel;
     sprite.filters = [new DropShadowFilter()];
     app.stage.addChild(sprite);
@@ -57,7 +57,7 @@ export class Preview {
       fontWeight: "700",
     });
 
-    TextInput.forEach((value, index) => {
+    Object.values(TextInput).forEach((value, index) => {
       const text = new PIXI.Text({
         text: "",
         style: textStyle,
@@ -77,11 +77,10 @@ export class Preview {
     text.text = value;
   }
 
-  updateImage(app: PIXI.Application, canvas: HTMLCanvasElement) {
+  updateImage(app: PIXI.Application, texture: PIXI.Texture) {
     // TODO: 이미지 자동 스케일링 코드 추가
     const image = app.stage.getChildByName(this.imageLabel) as PIXI.Sprite;
     const bgImage = app.stage.getChildByName(this.bgImageLabel) as PIXI.Sprite;
-    const texture = PIXI.Texture.from(canvas);
     image.texture = texture;
     bgImage.texture = texture;
   }
