@@ -1,6 +1,5 @@
 import { Song, SongText } from "./song";
 import * as PIXI from "pixi.js";
-import { loadImage } from "./utils";
 
 export default class Project {
   constructor(private setSongs: (songs: Song[]) => void) {}
@@ -20,8 +19,7 @@ export default class Project {
     const song: Song[] = [...songs];
     song[songIdx].url = filePath;
 
-    const canvas = await loadImage(filePath);
-    const texture = PIXI.Texture.from(canvas);
+    const texture = await PIXI.Assets.load(filePath);
     song[songIdx].texture = texture;
 
     this.setSongs(song);
