@@ -82,7 +82,7 @@ export default function Settings({
             uiText="이미지 경로"
             value="imagePath"
             editable={false}
-            content={songIdx >= 0 ? songs[songIdx].url ?? "" : ""}
+            content={songIdx < 0 ? "" : songs[songIdx].url ?? ""}
             rows={1}
           />
         </div>
@@ -100,6 +100,7 @@ export default function Settings({
                 value={value}
                 rows={cols}
                 content={content}
+                editable={songIdx < 0 ? false : true}
                 update={handleUpdate}
               />
             </div>
