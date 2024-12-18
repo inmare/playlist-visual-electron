@@ -6,7 +6,6 @@ import SongItem from "@components/SongItem";
 import Preview from "@ts/preview";
 import Project from "@ts/project";
 import { Song, SongText, TextInput } from "@ts/song";
-import { loadImage } from "@ts/utils";
 
 import "@scss/App.scss";
 import DefaultImage from "@assets/images/DefaultImage.png";
@@ -36,8 +35,7 @@ const defaultSongs: Song[] = [
   },
 ];
 
-loadImage(DefaultImage).then((canvas) => {
-  const texture = PIXI.Texture.from(canvas);
+PIXI.Assets.load(DefaultImage).then((texture) => {
   for (const song of defaultSongs) {
     song.texture = texture;
   }
