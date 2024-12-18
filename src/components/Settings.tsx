@@ -1,10 +1,12 @@
+import * as PIXI from "pixi.js";
+
+import Preview from "@ts/preview";
+import Project from "@ts/project";
+import InputTextarea from "@components/InputTextarea";
 import { Song, SongText, TextInput } from "@ts/song";
+
 import "@scss/Settings.scss";
 import "@scss/SettingInput.scss";
-import { Preview } from "@ts/preview";
-import { Project } from "@ts/project";
-import * as PIXI from "pixi.js";
-import InputTextarea from "./InputTextarea";
 
 type InputSetting = {
   uiText: string;
