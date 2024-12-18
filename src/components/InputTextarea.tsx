@@ -1,5 +1,3 @@
-import "@scss/InputTextarea.scss";
-
 export default function InputTextarea({
   uiText,
   value,
@@ -17,7 +15,6 @@ export default function InputTextarea({
 }) {
   return (
     <textarea
-      className="input-textarea"
       name={value}
       id={value}
       placeholder={uiText}
