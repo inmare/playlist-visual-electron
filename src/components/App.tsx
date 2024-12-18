@@ -1,13 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import * as PIXI from "pixi.js";
-import "@scss/App.scss";
+
 import Settings from "@components/Settings";
-import SongItem from "./SongItem";
-import { Preview } from "@ts/preview";
-import { Project } from "@ts/project";
+import SongItem from "@components/SongItem";
+import Preview from "@ts/preview";
+import Project from "@ts/project";
 import { Song, SongText, TextInput } from "@ts/song";
+import { loadImage } from "@ts/utils";
+
+import "@scss/App.scss";
 import DefaultImage from "@assets/images/DefaultImage.png";
-import { loadImage } from "@/ts/utils";
 
 const defaultSongs: Song[] = [
   {
@@ -102,10 +104,7 @@ export default function App() {
     <>
       <div className="wrapper">
         <div className="preview-wrapper" ref={previewRef}>
-          <canvas
-            ref={canvasRef}
-            style={{ width: canvasStyle.width, height: canvasStyle.height }}
-          />
+          <canvas ref={canvasRef} style={{ ...canvasStyle }} />
         </div>
         <div className="settings-wrapper">
           <Settings
