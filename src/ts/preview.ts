@@ -12,7 +12,7 @@ export default class Preview {
       width: videoSize.width,
       height: videoSize.height,
       backgroundColor: 0x000000,
-      antialias: true,
+      // antialias: true,
     });
 
     const canvasImage = await loadImage(DefaultImage);
@@ -23,22 +23,10 @@ export default class Preview {
     bgSprite.scale.set(factor);
     app.stage.addChild(bgSprite);
 
-    const mask = new PIXI.Graphics();
-    mask.fillStyle = 0xffffff;
-    mask.moveTo(0, 0);
-    mask.lineTo(videoSize.width * 0.8, 0);
-    mask.lineTo(videoSize.width * 0.65, videoSize.height);
-    mask.lineTo(0, videoSize.height);
-    mask.lineTo(0, 0);
-    mask.fill();
-
     const maskCanvas = document.createElement("canvas");
     maskCanvas.width = videoSize.width;
     maskCanvas.height = videoSize.height;
     const maskContext = maskCanvas.getContext("2d");
-    maskContext.fillStyle = "#000000";
-    maskContext.fillRect(0, 0, videoSize.width, videoSize.height);
-    // maskContext.filter = "blur(20px)";
     maskContext.fillStyle = "#ffffff";
     maskContext.beginPath();
     maskContext.moveTo(0, 0);
@@ -47,11 +35,14 @@ export default class Preview {
     maskContext.lineTo(0, videoSize.height);
     maskContext.lineTo(0, 0);
     maskContext.fill();
-    // document.body.appendChild(maskCanvas);
     const maskTexture = PIXI.Texture.from(maskCanvas);
     const maskSprite = new PIXI.Sprite(maskTexture);
 
-    const blurFilter = new PIXI.BlurFilter({ antialias: true, quality: 5 });
+    const blurFilter = new PIXI.BlurFilter({
+      antialias: true,
+      quality: 5,
+      padding: 100,
+    });
     blurFilter.strength = 20;
     blurFilter.repeatEdgePixels = true;
 
@@ -68,6 +59,10 @@ export default class Preview {
     ];
     app.stage.addChild(imageContainer);
 
+    const innerContainer = new PIXI.Container();
+    innerContainer.mask = maskSprite;
+    imageContainer.addChild(innerContainer);
+
     const colorMatrixFilter = new PIXI.ColorMatrixFilter();
     colorMatrixFilter.brightness(0.5, false);
     // colorMatrixFilter.grayscale(0.5, false);
@@ -80,8 +75,7 @@ export default class Preview {
 
     const sprite = new PIXI.Sprite(defaultImage);
     sprite.label = previewLabel.imageContainer.image;
-    sprite.filters = [colorMatrixFilter];
-    sprite.mask = maskSprite;
+
     sprite.scale.set(factor * 1.5);
 
     const initPoint = calcPoint(
@@ -91,7 +85,9 @@ export default class Preview {
 
     sprite.position.x = initPoint.x;
     sprite.position.y = initPoint.y;
-    imageContainer.addChild(sprite);
+    sprite.filters = [blurFilter, colorMatrixFilter];
+
+    innerContainer.addChild(sprite);
 
     const textContainer = new PIXI.Container({
       label: previewLabel.textContainer.container,
