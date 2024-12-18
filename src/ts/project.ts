@@ -2,7 +2,7 @@ import { Song, SongText } from "./song";
 import * as PIXI from "pixi.js";
 import { loadImage } from "./utils";
 
-export class Project {
+export default class Project {
   constructor(private setSongs: (songs: Song[]) => void) {}
 
   updateText(
