@@ -35,13 +35,16 @@ const calcPoint = (sprite: PIXI.Sprite, point: PIXI.Point): PIXI.Point => {
   return new PIXI.Point(x, y);
 };
 
-const setInitPoint = (sprite: PIXI.Sprite, ratio: number): void => {
+const setInitPoint = (
+  sprite: PIXI.Sprite,
+  ratio: number,
+  fliped = false
+): void => {
   sprite.scale.set(ratio);
+  if (fliped) sprite.scale.x *= -1;
   // sprite의 scale을 변경한 다음 위치를 조정해서 정중앙에 위치하도록 함
-  const initPoint = calcPoint(
-    sprite,
-    new PIXI.Point(VideoSize.width / 2, VideoSize.height / 2)
-  );
+  const x = fliped ? VideoSize.width / 2 + 20 : VideoSize.width / 2;
+  const initPoint = calcPoint(sprite, new PIXI.Point(x, VideoSize.height / 2));
   sprite.position.set(initPoint.x, initPoint.y);
 };
 
@@ -52,8 +55,11 @@ const getImages = (app: PIXI.Application): PIXI.Sprite[] => {
   const image = imageMaskContainer.getChildByName(
     PreviewLabel.image
   ) as PIXI.Sprite;
+  const flipedImage = imageMaskContainer.getChildByName(
+    PreviewLabel.flipedImage
+  ) as PIXI.Sprite;
   const bgImage = app.stage.getChildByName(PreviewLabel.bgImage) as PIXI.Sprite;
-  return [image, bgImage];
+  return [image, flipedImage, bgImage];
 };
 
 export default class Preview {
@@ -107,8 +113,14 @@ export default class Preview {
     sprite.label = PreviewLabel.image;
     setInitPoint(sprite, ratio * 1.5);
     sprite.filters = [imageBlur, imageColorMatrix];
-
     imageMaskContainer.addChild(sprite);
+
+    const flipedSprite = new PIXI.Sprite(defaultImage);
+    flipedSprite.label = PreviewLabel.flipedImage;
+    setInitPoint(flipedSprite, ratio * 1.5, true);
+    flipedSprite.filters = [imageBlur, imageColorMatrix];
+    imageMaskContainer.addChild(flipedSprite);
+
     imageContainer.addChild(imageMaskContainer);
     app.stage.addChild(imageContainer);
 
@@ -255,21 +267,27 @@ export default class Preview {
   }
 
   updateImage(app: PIXI.Application, texture: PIXI.Texture) {
-    const [image, bgImage] = getImages(app);
+    const [image, flipedImage, bgImage] = getImages(app);
     image.texture = texture;
+    flipedImage.texture = texture;
     bgImage.texture = texture;
     // 이미지의 위치, 크기도 같이 초기화
     const ratio = calculateRatio(texture);
 
     setInitPoint(image, ratio * 1.5);
+    setInitPoint(flipedImage, ratio * 1.5, true);
     setInitPoint(bgImage, ratio);
   }
 
   updateImagePos(app: PIXI.Application, pos: number) {
-    const [image, bgImage] = getImages(app);
+    const [image, flipedImage, bgImage] = getImages(app);
     const imagePoint = calcPoint(
       image,
       new PIXI.Point(pos, VideoSize.height / 2)
+    );
+    const flipedImagePoint = calcPoint(
+      flipedImage,
+      new PIXI.Point(pos + 20, VideoSize.height / 2)
     );
     const bgImagePoint = calcPoint(
       bgImage,
@@ -277,6 +295,7 @@ export default class Preview {
     );
 
     image.position.set(imagePoint.x, imagePoint.y);
+    flipedImage.position.set(flipedImagePoint.x, flipedImagePoint.y);
     bgImage.position.set(bgImagePoint.x, bgImagePoint.y);
   }
 }

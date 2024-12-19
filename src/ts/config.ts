@@ -11,6 +11,7 @@ const PreviewLabel = {
   imageContainer: "Image Container",
   maskContainer: "Mask Container",
   image: "Image",
+  flipedImage: "Fliped Image",
   gradient: "Gradient",
   textContainer: "Text Container",
   // TODO: text의 경우에는 기존의 설정이 따로 있고, 그걸 가지고 와야 됨
