@@ -101,6 +101,44 @@ export default class Preview {
     imageContainer.addChild(imageMaskContainer);
     app.stage.addChild(imageContainer);
 
+    const audioSpectrumContainer = new PIXI.Container();
+    audioSpectrumContainer.label = PreviewLabel.audioSpectrum;
+
+    const spectrumWidth = 1;
+    const spectrumFunc = (i: number) => {
+      return (
+        (Math.sin(i / (16 * Math.PI)) +
+          Math.sin(i / (2 * 16 * Math.PI) - 4 / Math.PI) +
+          Math.sin(i / (4 * 16 * Math.PI) + 4 / Math.PI) +
+          3) *
+        50
+      );
+    };
+
+    for (let i = 0; i < VideoSize.width; i++) {
+      const spectrum = new PIXI.Graphics();
+      spectrum.fillStyle = 0xffffff;
+      spectrum.rect(
+        i * spectrumWidth - VideoSize.width / 2,
+        -spectrumFunc(i),
+        spectrumWidth + 1,
+        spectrumFunc(i)
+      );
+      spectrum.fill();
+      audioSpectrumContainer.addChild(spectrum);
+    }
+
+    audioSpectrumContainer.rotation = Math.atan(
+      (0 - VideoSize.height) / (VideoSize.width * 0.8 - VideoSize.width * 0.65)
+    );
+    audioSpectrumContainer.position.set(
+      (VideoSize.width * (0.8 + 0.65)) / 2,
+      VideoSize.height / 2
+    );
+    audioSpectrumContainer.alpha = 0.15;
+
+    app.stage.addChild(audioSpectrumContainer);
+
     // 텍스트 설정
     const textContainer = new PIXI.Container({
       label: PreviewLabel.textContainer,
