@@ -86,6 +86,13 @@ export default function Settings({
             rows={1}
           />
         </div>
+        <div className="setting-input">
+          <div>
+            <label htmlFor="">이미지 위치</label>
+            <span className="image-pos">0px</span>
+          </div>
+          <input type="range" name="" id="" />
+        </div>
         {textList.map((item: InputSetting, index: number) => {
           let content = "";
           if (songIdx >= 0) {
