@@ -45,6 +45,17 @@ const setInitPoint = (sprite: PIXI.Sprite, ratio: number): void => {
   sprite.position.set(initPoint.x, initPoint.y);
 };
 
+const getImages = (app: PIXI.Application): PIXI.Sprite[] => {
+  const imageMaskContainer = app.stage
+    .getChildByName(PreviewLabel.imageContainer)
+    .getChildByName(PreviewLabel.maskContainer) as PIXI.Container;
+  const image = imageMaskContainer.getChildByName(
+    PreviewLabel.image
+  ) as PIXI.Sprite;
+  const bgImage = app.stage.getChildByName(PreviewLabel.bgImage) as PIXI.Sprite;
+  return [image, bgImage];
+};
+
 export default class Preview {
   async init(app: PIXI.Application, canvas: HTMLCanvasElement) {
     app.init({
@@ -244,15 +255,7 @@ export default class Preview {
   }
 
   updateImage(app: PIXI.Application, texture: PIXI.Texture) {
-    const imageMaskContainer = app.stage
-      .getChildByName(PreviewLabel.imageContainer)
-      .getChildByName(PreviewLabel.maskContainer) as PIXI.Container;
-    const image = imageMaskContainer.getChildByName(
-      PreviewLabel.image
-    ) as PIXI.Sprite;
-    const bgImage = app.stage.getChildByName(
-      PreviewLabel.bgImage
-    ) as PIXI.Sprite;
+    const [image, bgImage] = getImages(app);
     image.texture = texture;
     bgImage.texture = texture;
     // 이미지의 위치, 크기도 같이 초기화
@@ -260,5 +263,20 @@ export default class Preview {
 
     setInitPoint(image, ratio * 1.5);
     setInitPoint(bgImage, ratio);
+  }
+
+  updateImagePos(app: PIXI.Application, pos: number) {
+    const [image, bgImage] = getImages(app);
+    const imagePoint = calcPoint(
+      image,
+      new PIXI.Point(pos, VideoSize.height / 2)
+    );
+    const bgImagePoint = calcPoint(
+      bgImage,
+      new PIXI.Point(pos, VideoSize.height / 2)
+    );
+
+    image.position.set(imagePoint.x, imagePoint.y);
+    bgImage.position.set(bgImagePoint.x, bgImagePoint.y);
   }
 }
