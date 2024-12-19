@@ -91,7 +91,23 @@ export default function Settings({
             <label htmlFor="">이미지 위치</label>
             <span className="image-pos">0px</span>
           </div>
-          <input type="range" name="" id="" />
+          <div className="range-wrapper">
+            <input
+              type="range"
+              name=""
+              id=""
+              onChange={(event) => {
+                console.log(event.target.value);
+              }}
+            />
+            <div
+              style={{
+                width: "100%",
+                height: "10px",
+                backgroundColor: "#ff0000",
+              }}
+            ></div>
+          </div>
         </div>
         {textList.map((item: InputSetting, index: number) => {
           let content = "";

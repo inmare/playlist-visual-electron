@@ -20,6 +20,15 @@
     margin: 0 0 8px 5px;
   }
 
+  .range-wrapper {
+    width: 100%;
+  }
+
+  input[type="range"] {
+    width: 100%;
+    margin: 0 0 8px 0;
+  }
+
   .image-pos {
     @include settingText;
 
