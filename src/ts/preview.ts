@@ -1,21 +1,29 @@
 import * as PIXI from "pixi.js";
 import { DropShadowFilter } from "pixi-filters";
 import DefaultImage from "@assets/images/DefaultImage.png";
-import { TextInput } from "@ts/song";
-import { calculateRatio } from "@ts/utils";
-import { videoSize, previewLabel } from "@ts/config";
+import { calculateRatio, getLineLength } from "@ts/utils";
+import {
+  VideoSize,
+  PreviewLabel,
+  TextPosition,
+  TextSetting,
+  TextConfig,
+  TextOrder,
+  TextStyle,
+  FontWeight,
+} from "@ts/config";
 
 const createMask = () => {
   const maskCanvas = document.createElement("canvas");
-  maskCanvas.width = videoSize.width;
-  maskCanvas.height = videoSize.height;
+  maskCanvas.width = VideoSize.width;
+  maskCanvas.height = VideoSize.height;
   const maskContext = maskCanvas.getContext("2d");
   maskContext.fillStyle = "#ffffff";
   maskContext.beginPath();
   maskContext.moveTo(0, 0);
-  maskContext.lineTo(videoSize.width * 0.8, 0);
-  maskContext.lineTo(videoSize.width * 0.65, videoSize.height);
-  maskContext.lineTo(0, videoSize.height);
+  maskContext.lineTo(VideoSize.width * 0.8, 0);
+  maskContext.lineTo(VideoSize.width * 0.65, VideoSize.height);
+  maskContext.lineTo(0, VideoSize.height);
   maskContext.lineTo(0, 0);
   maskContext.fill();
   return PIXI.Texture.from(maskCanvas);
@@ -32,7 +40,7 @@ const setInitPoint = (sprite: PIXI.Sprite, ratio: number): void => {
   // sprite의 scale을 변경한 다음 위치를 조정해서 정중앙에 위치하도록 함
   const initPoint = calcPoint(
     sprite,
-    new PIXI.Point(videoSize.width / 2, videoSize.height / 2)
+    new PIXI.Point(VideoSize.width / 2, VideoSize.height / 2)
   );
   sprite.position.set(initPoint.x, initPoint.y);
 };
@@ -41,8 +49,8 @@ export default class Preview {
   async init(app: PIXI.Application, canvas: HTMLCanvasElement) {
     app.init({
       canvas: canvas,
-      width: videoSize.width,
-      height: videoSize.height,
+      width: VideoSize.width,
+      height: VideoSize.height,
       backgroundColor: 0x000000,
       antialias: true,
     });
@@ -51,7 +59,7 @@ export default class Preview {
     const ratio = calculateRatio(defaultImage);
     // 배경 이미지 설정
     const bgSprite = new PIXI.Sprite(defaultImage);
-    bgSprite.label = previewLabel.bgImage;
+    bgSprite.label = PreviewLabel.bgImage;
     setInitPoint(bgSprite, ratio);
     app.stage.addChild(bgSprite);
 
@@ -61,7 +69,7 @@ export default class Preview {
 
     // drop shadow용 제일 밖 container 설정
     const imageContainer = new PIXI.Container();
-    imageContainer.label = previewLabel.imageContainer;
+    imageContainer.label = PreviewLabel.imageContainer;
     const imageDropShadow = new DropShadowFilter({
       offset: new PIXI.Point(0, 0),
       color: 0x000000,
@@ -73,7 +81,7 @@ export default class Preview {
 
     // mask용 container 설정
     const imageMaskContainer = new PIXI.Container();
-    imageMaskContainer.label = previewLabel.maskContainer;
+    imageMaskContainer.label = PreviewLabel.maskContainer;
     imageMaskContainer.mask = maskSprite;
 
     const imageBlur = new PIXI.BlurFilter({
@@ -85,7 +93,7 @@ export default class Preview {
     imageColorMatrix.brightness(0.5, false);
 
     const sprite = new PIXI.Sprite(defaultImage);
-    sprite.label = previewLabel.image;
+    sprite.label = PreviewLabel.image;
     setInitPoint(sprite, ratio * 1.5);
     sprite.filters = [imageBlur, imageColorMatrix];
 
@@ -95,7 +103,7 @@ export default class Preview {
 
     // 텍스트 설정
     const textContainer = new PIXI.Container({
-      label: previewLabel.textContainer,
+      label: PreviewLabel.textContainer,
     });
     const textDropShadow = new DropShadowFilter({
       offset: new PIXI.Point(0, 0),
@@ -107,44 +115,105 @@ export default class Preview {
     textContainer.filters = [textDropShadow];
     app.stage.addChild(textContainer);
 
-    const textStyle = new PIXI.TextStyle({
-      fontFamily: "Pretendard JP Variable",
-      fontSize: 96,
-      fill: 0xffffff,
-      align: "left",
-      fontWeight: "700",
-      lineHeight: 96,
-    });
-
-    Object.values(TextInput).forEach((value, index) => {
-      const text = new PIXI.Text({
-        text: "",
-        style: textStyle,
-        label: value as string,
+    TextOrder.forEach((value: keyof typeof TextConfig, index: number) => {
+      const textSetting: TextSetting = TextConfig[value];
+      const textStyle = new PIXI.TextStyle({
+        fontFamily: "Pretendard JP Variable",
+        fill: 0xffffff,
+        fontSize: textSetting.singleLine.fontSize,
+        fontWeight: textSetting.singleLine.fontWeight,
+        lineHeight: textSetting.singleLine.lineHeight,
       });
 
-      text.y = textStyle.fontSize * index;
+      const text = new PIXI.Text({
+        text: (textSetting.prefix ?? "") + (textSetting.text ?? ""),
+        style: textStyle,
+        label: value,
+      });
+
+      text.position.x = textSetting.x;
+      if (textSetting.yPosType === TextPosition.absolute) {
+        text.position.y = textSetting.y;
+      } else if (textSetting.yPosType === TextPosition.relative) {
+        const prevTextConfig = TextConfig[TextOrder[index - 1]];
+        const prevPixiText = textContainer.getChildByName(
+          prevTextConfig.label
+        ) as PIXI.Text;
+        const lineLength = getLineLength(prevPixiText.text);
+        let prevTextHeight: number;
+        if (lineLength > 1) {
+          prevTextHeight = lineLength * prevTextConfig.multiLine.lineHeight;
+        } else {
+          const prevText = prevPixiText.text;
+          prevTextHeight =
+            prevText === "" ? 0 : prevTextConfig.singleLine.lineHeight;
+        }
+        text.position.y =
+          prevPixiText.position.y + prevTextHeight + textSetting.y;
+      }
+
       textContainer.addChild(text);
     });
   }
 
-  updateText(app: PIXI.Application, name: string, value: string) {
+  updateText(app: PIXI.Application, name: string, textValue: string) {
     const textContainer = app.stage.getChildByName(
-      previewLabel.textContainer
+      PreviewLabel.textContainer
     ) as PIXI.Container;
-    const text = textContainer.getChildByName(name) as PIXI.Text;
-    text.text = value;
+
+    const changedTextIdx = TextOrder.findIndex((text) => text === name);
+
+    TextOrder.forEach((value: keyof typeof TextConfig, index: number) => {
+      if (index < changedTextIdx) return;
+
+      const textSetting: TextSetting = TextConfig[value];
+      const text = textContainer.getChildByName(value) as PIXI.Text;
+
+      if (index === changedTextIdx) {
+        text.text = (textSetting.prefix ?? "") + textValue;
+        const getStyle = (key: keyof TextStyle) => {
+          return getLineLength(textValue) > 1 && textSetting.multiLine
+            ? textSetting.multiLine[key]
+            : textSetting.singleLine[key];
+        };
+        text.style.fontSize = getStyle("fontSize") as number;
+        text.style.fontWeight = getStyle("fontWeight") as FontWeight;
+        text.style.lineHeight = getStyle("lineHeight") as number;
+      }
+
+      text.position.x = textSetting.x;
+      if (textSetting.yPosType === TextPosition.absolute) {
+        text.position.y = textSetting.y;
+      } else if (textSetting.yPosType === TextPosition.relative) {
+        const prevSetting = TextConfig[TextOrder[index - 1]];
+        const prevPixiText = textContainer.getChildByName(
+          prevSetting.label
+        ) as PIXI.Text;
+        const prevText = prevPixiText.text;
+        const lineLength = getLineLength(prevText);
+        const isPrevMultiLine = lineLength > 1 && prevSetting.multiLine;
+        let prevTextHeight: number;
+        if (isPrevMultiLine) {
+          prevTextHeight = lineLength * prevSetting.multiLine.lineHeight;
+        } else {
+          prevTextHeight =
+            prevText === "" ? 0 : prevSetting.singleLine.lineHeight;
+        }
+        text.position.y =
+          prevPixiText.position.y + prevTextHeight + textSetting.y;
+      }
+    });
   }
 
   updateImage(app: PIXI.Application, texture: PIXI.Texture) {
     const imageMaskContainer = app.stage
-      .getChildByName(previewLabel.imageContainer)
-      .getChildByName(previewLabel.maskContainer) as PIXI.Container;
+      .getChildByName(PreviewLabel.imageContainer)
+      .getChildByName(PreviewLabel.maskContainer) as PIXI.Container;
     const image = imageMaskContainer.getChildByName(
-      previewLabel.image
+      PreviewLabel.image
     ) as PIXI.Sprite;
     const bgImage = app.stage.getChildByName(
-      previewLabel.bgImage
+      PreviewLabel.bgImage
     ) as PIXI.Sprite;
     image.texture = texture;
     bgImage.texture = texture;
