@@ -1,29 +1,37 @@
 @font-face {
-  font-family: "Gyeonggi Title";
   src: url("../assets/fonts/Title_Light.woff") format("woff");
-  font-weight: 300;
-  font-style: normal;
+  font: {
+    family: "Gyeonggi Title";
+    weight: 300;
+    style: normal;
+  }
 }
 
 @font-face {
-  font-family: "Gyeonggi Title";
   src: url("../assets/fonts/Title_Medium.woff") format("woff");
-  font-weight: 500;
-  font-style: normal;
+  font: {
+    family: "Gyeonggi Title";
+    weight: 500;
+    style: normal;
+  }
 }
 
 @font-face {
-  font-family: "Gyeonggi Title";
   src: url("../assets/fonts/Title_Bold.woff") format("woff");
-  font-weight: 700;
-  font-style: normal;
+  font: {
+    family: "Gyeonggi Title";
+    weight: 700;
+    style: normal;
+  }
 }
 
 @font-face {
-  font-family: "Pretendard JP Variable";
-  font-weight: 45 920;
-  font-style: normal;
-  font-display: swap;
   src: url("../assets/fonts/PretendardJPVariable.woff2")
     format("woff2-variations");
+  font: {
+    family: "Pretendard JP Variable";
+    weight: 45 920;
+    style: normal;
+    display: swap;
+  }
 }

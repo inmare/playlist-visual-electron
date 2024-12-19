@@ -2,21 +2,22 @@
 @use "color" as *;
 
 .song-item {
-  background-color: $color-900;
-  font-family: "Pretendard JP Variable";
-  font-weight: 700;
-  margin: 10px 0px;
+  font: {
+    family: "Pretendard JP Variable", sans-serif;
+    weight: 700;
+  }
   color: $color-white;
+  margin: 10px 0px;
   padding: 12px;
   background-color: $color-950;
-  border-radius: 10px;
   border: 1px solid $color-900;
+  border-radius: 10px;
   border-left: 10px solid $color-700;
 }
 
 .song-item-selected {
+  color: $color-black;
   background-color: $color-200;
   border: 1px solid $color-600;
   border-left: 10px solid $color-500;
-  color: $color-black;
 }

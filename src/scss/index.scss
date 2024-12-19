@@ -14,10 +14,12 @@
 
 /* 스크롤바 막대 꾸미기 */
 ::-webkit-scrollbar-thumb {
-  background-color: $color-gray;
-  border-radius: 10px;
   border: 4px solid transparent;
-  background-clip: padding-box;
+  border-radius: 10px;
+  background: {
+    color: $color-gray;
+    clip: padding-box;
+  }
 }
 
 /* 스크롤바 트랙 꾸미기 */
