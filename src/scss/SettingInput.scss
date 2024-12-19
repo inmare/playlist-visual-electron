@@ -1,6 +1,14 @@
 @use "font" as *;
 @use "color" as *;
 
+@mixin settingText {
+  font: {
+    family: "Gyeonggi Title", sans-serif;
+    weight: 500;
+  }
+  color: $color-white;
+}
+
 .setting-input {
   display: flex;
   flex-direction: column;
@@ -8,17 +16,21 @@
   margin: 5px 10px;
 
   label {
-    font-family: "Gyeonggi Title", sans-serif;
-    font-weight: 500;
-    color: $color-white;
+    @include settingText;
     margin: 0 0 8px 5px;
   }
 
+  .image-pos {
+    @include settingText;
+
+    &:before {
+      content: ": ";
+    }
+  }
+
   button {
-    font-family: "Gyeonggi Title", sans-serif;
-    font-weight: 500;
+    @include settingText;
     background-color: $color-800;
-    color: $color-white;
     border-radius: 5px;
     outline: none;
     border: none;
@@ -29,8 +41,10 @@
   textarea {
     outline: none;
     border: transparent;
-    font-family: "Pretendard JP Variable", sans-serif;
-    font-weight: 500;
+    font: {
+      family: "Pretendard JP Variable", sans-serif;
+      weight: 500;
+    }
     border-radius: 5px;
     padding: 10px;
     resize: none;
