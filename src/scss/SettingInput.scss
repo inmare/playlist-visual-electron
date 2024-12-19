@@ -9,6 +9,10 @@
   color: $color-white;
 }
 
+::-webkit-slider-runnable-track {
+  appearance: none;
+}
+
 .setting-input {
   display: flex;
   flex-direction: column;
@@ -18,15 +22,6 @@
   label {
     @include settingText;
     margin: 0 0 8px 5px;
-  }
-
-  .range-wrapper {
-    width: 100%;
-  }
-
-  input[type="range"] {
-    width: 100%;
-    margin: 0 0 8px 0;
   }
 
   .image-pos {
@@ -39,7 +34,7 @@
 
   button {
     @include settingText;
-    background-color: $color-800;
+    background-color: $color-600;
     border-radius: 5px;
     outline: none;
     border: none;

@@ -1,8 +1,10 @@
+import { useState } from "react";
 import * as PIXI from "pixi.js";
 
 import Preview from "@ts/preview";
 import Project from "@ts/project";
 import InputTextarea from "@components/InputTextarea";
+import InputRange from "./InputRange";
 import { Song, SongText, TextInput } from "@ts/song";
 
 import "@scss/Settings.scss";
@@ -73,6 +75,13 @@ export default function Settings({
     preview.updateImage(app, texture);
   };
 
+  const [imagePos, setImagePos] = useState(960);
+
+  const handleImagePos = (pos: number) => {
+    setImagePos(pos);
+    preview.updateImagePos(app, pos);
+  };
+
   return (
     <>
       <div className="settings">
@@ -87,27 +96,17 @@ export default function Settings({
           />
         </div>
         <div className="setting-input">
-          <div>
-            <label htmlFor="">이미지 위치</label>
-            <span className="image-pos">0px</span>
-          </div>
-          <div className="range-wrapper">
-            <input
-              type="range"
-              name=""
-              id=""
-              onChange={(event) => {
-                console.log(event.target.value);
-              }}
-            />
-            <div
-              style={{
-                width: "100%",
-                height: "10px",
-                backgroundColor: "#ff0000",
-              }}
-            ></div>
-          </div>
+          <label htmlFor="">
+            이미지 위치 <span className="image-pos">{imagePos}px</span>
+          </label>
+          <InputRange
+            min={960}
+            max={1920}
+            defaultValue={960}
+            step={1}
+            disabled={songIdx < 0 ? true : false}
+            updatePos={handleImagePos}
+          />
         </div>
         {textList.map((item: InputSetting, index: number) => {
           let content = "";

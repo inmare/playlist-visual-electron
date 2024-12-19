@@ -1,0 +1,59 @@
+@use "color" as *;
+
+$range-height: 4px;
+$range-border-radius: 2px;
+$input-margin: 2px;
+
+.input-range {
+  width: 100%;
+  position: relative;
+  margin: 8px 2px 12px 2px;
+
+  .input-background {
+    width: calc(100% - 12px);
+    margin: auto;
+    height: $range-height;
+    background-color: $color-100;
+    position: absolute;
+    border-radius: $range-border-radius;
+    margin: 0 $input-margin;
+  }
+
+  .input-progress {
+    background-color: $color-600;
+    height: $range-height;
+    border-radius: $range-border-radius;
+  }
+
+  &.input-disabled {
+    .input-background {
+      background-color: $color-gray;
+    }
+
+    .input-progress {
+      background-color: $color-700;
+    }
+  }
+
+  input[type="range"] {
+    width: calc(100% - $input-margin * 2);
+    -webkit-appearance: none;
+    appearance: none;
+    background: none;
+    position: absolute;
+    top: -5px;
+
+    &::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      background-color: $color-600;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+    }
+
+    &:disabled::-webkit-slider-thumb {
+      background-color: $color-700;
+    }
+  }
+}
