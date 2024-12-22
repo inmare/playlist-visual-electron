@@ -56,7 +56,6 @@ interface TextSetting {
 const answerOfLife = 42;
 const titleSuffix = "Title";
 
-// TODO: 모든 y값을 화면을 보면서 조정해야 함
 const TextConfig: Record<string, TextSetting> = {
   songname: {
     yPosType: TextPosition.absolute,
@@ -170,6 +169,12 @@ const TextOrder: ReadonlyArray<keyof typeof TextConfig> = [
   TextInput.nickname,
 ];
 
+const ImageValue = {
+  min: 960,
+  max: 1920,
+  default: 960,
+};
+
 export {
   VideoSize,
   PreviewLabel,
@@ -179,4 +184,5 @@ export {
   TextConfig,
   TextOrder,
   FontWeight,
+  ImageValue,
 };
