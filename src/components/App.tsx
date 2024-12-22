@@ -6,6 +6,7 @@ import SongItem from "@components/SongItem";
 import Preview from "@ts/preview";
 import Project from "@ts/project";
 import { Song, SongText, TextInput } from "@ts/song";
+import { ImageValue } from "@ts/config";
 
 import "@scss/App.scss";
 import DefaultImage from "@assets/images/DefaultImage.png";
@@ -21,6 +22,7 @@ const defaultSongs: Song[] = [
     endTime: 10,
     url: null,
     texture: null,
+    imgPos: ImageValue.default,
   },
   {
     songname: "からくりピエロ",
@@ -32,6 +34,7 @@ const defaultSongs: Song[] = [
     endTime: 20,
     url: null,
     texture: null,
+    imgPos: ImageValue.default,
   },
 ];
 

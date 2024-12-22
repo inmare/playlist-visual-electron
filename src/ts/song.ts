@@ -24,6 +24,7 @@ interface SongTime {
 interface SongImage {
   url: string | null;
   texture: PIXI.Texture | null;
+  imgPos: number;
 }
 
 type Song = SongText & SongTime & SongImage;
