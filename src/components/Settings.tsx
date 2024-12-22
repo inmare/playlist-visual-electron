@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import * as PIXI from "pixi.js";
 
 import Preview from "@ts/preview";
@@ -6,6 +6,7 @@ import Project from "@ts/project";
 import InputTextarea from "@components/InputTextarea";
 import InputRange from "./InputRange";
 import { Song, SongText, TextInput } from "@ts/song";
+import { ImageValue } from "@ts/config";
 
 import "@scss/Settings.scss";
 import "@scss/SettingInput.scss";
@@ -73,14 +74,23 @@ export default function Settings({
     await project.updateImage(songs, songIdx, filePath);
     const texture = songs[songIdx].texture;
     preview.updateImage(app, texture);
+    preview.updateImagePos(app, songs[songIdx].imgPos);
   };
 
-  const [imagePos, setImagePos] = useState(960);
+  const [imagePos, setImagePos] = useState(ImageValue.default);
 
   const handleImagePos = (pos: number) => {
     setImagePos(pos);
     preview.updateImagePos(app, pos);
+    project.updateImagePos(songs, songIdx, imagePos);
   };
+
+  useEffect(() => {
+    if (songIdx < 0) return;
+    const imagePos = songs[songIdx].imgPos;
+    setImagePos(imagePos);
+    preview.updateImagePos(app, imagePos);
+  }, [songIdx]);
 
   return (
     <>
@@ -100,12 +110,14 @@ export default function Settings({
             이미지 위치 <span className="image-pos">{imagePos}px</span>
           </label>
           <InputRange
-            min={960}
-            max={1920}
-            defaultValue={960}
+            min={ImageValue.min}
+            max={ImageValue.max}
+            defaultValue={ImageValue.default}
             step={1}
             disabled={songIdx < 0 ? true : false}
             updatePos={handleImagePos}
+            songs={songs}
+            songIdx={songIdx}
           />
         </div>
         {textList.map((item: InputSetting, index: number) => {

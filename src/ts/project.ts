@@ -24,4 +24,10 @@ export default class Project {
 
     this.setSongs(song);
   }
+
+  updateImagePos(songs: Song[], songIdx: number, imgPos: number) {
+    const song: Song[] = [...songs];
+    song[songIdx].imgPos = imgPos;
+    this.setSongs(song);
+  }
 }

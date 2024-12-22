@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Song } from "@ts/song";
 import "@scss/InputRange.scss";
 
 export default function InputRange({
@@ -8,6 +9,8 @@ export default function InputRange({
   defaultValue,
   disabled,
   updatePos,
+  songs,
+  songIdx,
 }: {
   min: number;
   max: number;
@@ -15,8 +18,16 @@ export default function InputRange({
   defaultValue: number;
   disabled: boolean;
   updatePos: (pos: number) => void;
+  songs: Song[];
+  songIdx: number;
 }) {
   const [rangeValue, setRangeValue] = useState(defaultValue);
+
+  useEffect(() => {
+    if (songIdx < 0) return;
+    const imagePos = songs[songIdx].imgPos;
+    setRangeValue(imagePos);
+  }, [songIdx]);
 
   return (
     <div className={"input-range" + (disabled ? " input-disabled" : "")}>
@@ -33,7 +44,7 @@ export default function InputRange({
         min={min}
         max={max}
         step={step}
-        defaultValue={defaultValue}
+        value={rangeValue}
         onChange={(event) => {
           setRangeValue(Number(event.target.value));
           updatePos(Number(event.target.value));
