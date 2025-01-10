@@ -62,8 +62,8 @@ const getImages = (app: PIXI.Application): PIXI.Sprite[] => {
   return [image, flipedImage, bgImage];
 };
 
-export default class Preview {
-  async init(app: PIXI.Application, canvas: HTMLCanvasElement) {
+export default abstract class Preview {
+  static async init(app: PIXI.Application, canvas: HTMLCanvasElement) {
     app.init({
       canvas: canvas,
       width: VideoSize.width,
@@ -217,7 +217,7 @@ export default class Preview {
     });
   }
 
-  updateText(app: PIXI.Application, name: string, textValue: string) {
+  static updateText(app: PIXI.Application, name: string, textValue: string) {
     const textContainer = app.stage.getChildByName(
       PreviewLabel.textContainer
     ) as PIXI.Container;
@@ -266,7 +266,7 @@ export default class Preview {
     });
   }
 
-  updateImage(app: PIXI.Application, texture: PIXI.Texture) {
+  static updateImage(app: PIXI.Application, texture: PIXI.Texture) {
     const [image, flipedImage, bgImage] = getImages(app);
     image.texture = texture;
     flipedImage.texture = texture;
@@ -279,7 +279,7 @@ export default class Preview {
     setInitPoint(bgImage, ratio);
   }
 
-  updateImagePos(app: PIXI.Application, pos: number) {
+  static updateImagePos(app: PIXI.Application, pos: number) {
     const [image, flipedImage, bgImage] = getImages(app);
     const imagePoint = calcPoint(
       image,
