@@ -1,9 +1,8 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useContext, useEffect, useState } from "react";
 import * as PIXI from "pixi.js";
-
 import Preview from "@ts/preview";
-import Project from "@ts/project";
 import InputTextarea from "@components/InputTextarea";
+import { SongsContext, SongsDispatchContext } from "./SongsProvider";
 import InputRange from "./InputRange";
 import { Song, SongText, TextInput } from "@ts/song";
 import { ImageValue } from "@ts/config";
@@ -46,23 +45,23 @@ const textList: InputSetting[] = [
 ] as const;
 
 export default function Settings({
-  songs,
   songIdx,
   appRef,
-  preview,
-  project,
 }: {
-  songs: Song[];
   songIdx: number;
   appRef: React.RefObject<PIXI.Application>;
-  preview: Preview;
-  project: Project;
 }) {
   const app = appRef.current;
+  const songs = useContext(SongsContext);
+  const songsDispatch = useContext(SongsDispatchContext);
 
   const handleUpdate = (name: string, value: string) => {
-    project.updateText(songs, songIdx, name as keyof SongText, value);
-    preview.updateText(app, name, value);
+    songsDispatch({
+      type: "text",
+      index: songIdx,
+      value: { [name]: value },
+    });
+    Preview.updateText(app, name, value);
   };
 
   const handleFileInput = async () => {
@@ -71,25 +70,37 @@ export default function Settings({
     const filePath = await window.electronAPI.loadImage();
     if (!filePath) return;
 
-    await project.updateImage(songs, songIdx, filePath);
-    const texture = songs[songIdx].texture;
-    preview.updateImage(app, texture);
-    preview.updateImagePos(app, songs[songIdx].imgPos);
+    PIXI.Assets.load(filePath).then((texture) => {
+      songsDispatch({
+        type: "image",
+        index: songIdx,
+        value: { url: filePath, texture: texture },
+      });
+
+      console.log(songs[songIdx]);
+
+      Preview.updateImage(app, texture);
+      Preview.updateImagePos(app, songs[songIdx].imgPos);
+    });
   };
 
   const [imagePos, setImagePos] = useState(ImageValue.default);
 
   const handleImagePos = (pos: number) => {
     setImagePos(pos);
-    preview.updateImagePos(app, pos);
-    project.updateImagePos(songs, songIdx, imagePos);
+    songsDispatch({
+      type: "imagePos",
+      index: songIdx,
+      value: { imgPos: pos },
+    });
+    Preview.updateImagePos(app, pos);
   };
 
   useEffect(() => {
     if (songIdx < 0) return;
     const imagePos = songs[songIdx].imgPos;
     setImagePos(imagePos);
-    preview.updateImagePos(app, imagePos);
+    Preview.updateImagePos(app, imagePos);
   }, [songIdx]);
 
   return (
