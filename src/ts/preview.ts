@@ -13,6 +13,9 @@ import {
   FontWeight,
 } from "@ts/config";
 
+import Square from "@ts/graphics/square";
+import Vector from "@ts/utils/vector";
+
 const createMask = () => {
   const maskCanvas = document.createElement("canvas");
   maskCanvas.width = VideoSize.width;
@@ -71,6 +74,18 @@ export default abstract class Preview {
       backgroundColor: 0x000000,
       antialias: true,
     });
+
+    const sqaure = new Square(
+      app,
+      new Vector(VideoSize.width / 2, VideoSize.height / 2),
+      100,
+      100
+    );
+
+    console.log(sqaure);
+
+    return;
+
     // 기본 이미지 로드 및 비율 계산
     const defaultImage = await PIXI.Assets.load(DefaultImage);
     const ratio = calculateRatio(defaultImage);
