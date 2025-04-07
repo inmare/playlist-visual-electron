@@ -62,11 +62,25 @@ export default function App() {
     Preview.updateImage(app, song.texture);
   };
 
+  const handleCanvas = () => {
+    appRef.current?.renderer.extract
+      .canvas(appRef.current.stage)
+      .toBlob(async (blob) => {
+        if (!blob) return;
+
+        const arrayBuffer = await blob.arrayBuffer();
+        const uint8array = new Uint8Array(arrayBuffer);
+
+        window.electronAPI.saveCanvas(uint8array);
+      });
+  };
+
   return (
     <>
       <div className="wrapper">
         <div className="preview-wrapper" ref={previewRef}>
           <canvas ref={canvasRef} style={{ ...canvasStyle }} />
+          <button onClick={handleCanvas}>Send Image</button>
         </div>
         <div className="settings-wrapper">
           <Settings songIdx={songIdx} appRef={appRef} />

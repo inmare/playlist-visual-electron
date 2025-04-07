@@ -8,4 +8,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   // saveImage: (buffer) => {
   //   ipcRenderer.invoke("saveImage", buffer);
   // },
+  saveCanvas: (buffer: Uint8Array) => {
+    ipcRenderer.send("saveCanvas", buffer);
+  },
 });

@@ -1,10 +1,16 @@
 import { app, BrowserWindow, ipcMain, dialog } from "electron";
 import path from "path";
-// import fs from "fs";
+import fs from "fs";
 import started from "electron-squirrel-startup";
 
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string;
 declare const MAIN_WINDOW_VITE_NAME: string;
+
+ipcMain.on("saveCanvas", (event, buffer: Buffer) => {
+  const filePath = path.join(process.cwd(), "sample.png");
+  fs.writeFileSync(filePath, buffer);
+  console.log("Saved canvas to", filePath);
+});
 
 async function handleFileOpen(): Promise<string | null> {
   const { canceled, filePaths } = await dialog.showOpenDialog({});
