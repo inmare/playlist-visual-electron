@@ -1,15 +1,48 @@
 import { app, BrowserWindow, ipcMain, dialog } from "electron";
 import path from "path";
 import fs from "fs";
+import { PassThrough } from "stream";
+import { spawn } from "child_process";
 import started from "electron-squirrel-startup";
 
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string;
 declare const MAIN_WINDOW_VITE_NAME: string;
 
 ipcMain.on("saveCanvas", (event, buffer: Buffer) => {
+  // 이미지 하나 저장
   const filePath = path.join(process.cwd(), "sample.png");
   fs.writeFileSync(filePath, buffer);
   console.log("Saved canvas to", filePath);
+
+  console.log(buffer);
+
+  const imageStream = new PassThrough();
+  const ffmpeg = spawn("ffmpeg", [
+    "-y",
+    "-f",
+    "image2pipe", // raw 비디오 입력
+    "-vcodec",
+    "png", // raw 비디오 코덱
+    "-s",
+    "1920x1080", // 해상도 (반드시 실제 이미지 크기와 일치해야 함)
+    "-r",
+    "30", // 프레임 레이트
+    "-i",
+    "-", // 표준 입력에서 데이터 읽기
+    "-pix_fmt",
+    "yuv420p", // 출력 픽셀 포맷 (일반적인 비디오 포맷)
+    "-c:v",
+    "libx264", // H.264 코덱
+    "output.mp4", // 출력 파일
+  ]);
+
+  imageStream.pipe(ffmpeg.stdin);
+
+  for (let i = 0; i < 30 * 5; i++) {
+    imageStream.write(buffer);
+  }
+
+  imageStream.end();
 });
 
 async function handleFileOpen(): Promise<string | null> {
