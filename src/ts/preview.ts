@@ -13,8 +13,13 @@ import {
   FontWeight,
 } from "@ts/config";
 
+import Renderer from "@ts/graphics/renderer";
 import Square from "@ts/graphics/square";
 import Vector from "@ts/utils/vector";
+import Color from "@ts/utils/color";
+import Image from "@ts/graphics/image";
+import Text from "@ts/graphics/text";
+import Mask from "@ts/graphics/mask";
 
 const createMask = () => {
   const maskCanvas = document.createElement("canvas");
@@ -66,28 +71,71 @@ const getImages = (app: PIXI.Application): PIXI.Sprite[] => {
 };
 
 export default abstract class Preview {
-  static async init(app: PIXI.Application, canvas: HTMLCanvasElement) {
-    app.init({
-      canvas: canvas,
-      width: VideoSize.width,
-      height: VideoSize.height,
-      backgroundColor: 0x000000,
-      antialias: true,
-    });
+  static prevRender: Renderer | undefined = undefined;
+  static videoRender: Renderer | undefined = undefined;
 
-    const sqaure = new Square(
+  static async init(app: PIXI.Application, canvas: HTMLCanvasElement) {
+    Preview.prevRender = new Renderer(
       app,
-      new Vector(VideoSize.width / 2, VideoSize.height / 2),
-      100,
-      100
+      canvas,
+      VideoSize.width,
+      VideoSize.height,
+      new Color([0, 0, 0])
     );
 
-    console.log(sqaure);
+    const center = new Vector(VideoSize.width / 2, VideoSize.height / 2);
+
+    const bgSquare = new Square(
+      center,
+      VideoSize.width,
+      VideoSize.height,
+      new Color([0, 0, 255])
+    );
+
+    const imagePos = new Vector(400, center.y);
+    const maskSize = 500;
+
+    const maskPath = [
+      new Vector(imagePos.x - maskSize / 2, imagePos.y - maskSize / 2),
+      new Vector(imagePos.x + maskSize / 2, imagePos.y - maskSize / 2),
+      new Vector(imagePos.x + maskSize / 2, imagePos.y + maskSize / 2),
+      new Vector(imagePos.x - maskSize / 2, imagePos.y + maskSize / 2),
+    ];
+    const mask = new Mask(maskPath);
+
+    const defaultImage = await PIXI.Assets.load(DefaultImage);
+    const imageSprite = new PIXI.Sprite(defaultImage);
+    const image = new Image(
+      imageSprite,
+      imagePos,
+      new Vector(0.5, 0.5),
+      1,
+      mask
+    );
+
+    const sqaure = new Square(center, 100, 100, new Color([255, 0, 0]));
+
+    const text = new Text(
+      "test",
+      center,
+      100,
+      new Color([0, 0, 0]),
+      "Pretendard JP Variable",
+      "800",
+      1.5
+    );
+
+    Preview.prevRender.addLayer(bgSquare);
+    Preview.prevRender.addLayer(image);
+    Preview.prevRender.addLayer(sqaure);
+    Preview.prevRender.addLayer(text);
+
+    Preview.prevRender.render(0);
 
     return;
 
     // 기본 이미지 로드 및 비율 계산
-    const defaultImage = await PIXI.Assets.load(DefaultImage);
+    // const defaultImage = await PIXI.Assets.load(DefaultImage);
     const ratio = calculateRatio(defaultImage);
     // 배경 이미지 설정
     const bgSprite = new PIXI.Sprite(defaultImage);
