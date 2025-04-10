@@ -75,13 +75,8 @@ export default abstract class Preview {
   static videoRender: Renderer | undefined = undefined;
 
   static async init(app: PIXI.Application, canvas: HTMLCanvasElement) {
-    Preview.prevRender = new Renderer(
-      app,
-      canvas,
-      VideoSize.width,
-      VideoSize.height,
-      new Color([0, 0, 0])
-    );
+    Preview.prevRender = new Renderer(VideoSize.width, VideoSize.height);
+    Preview.prevRender.init(app, canvas);
 
     const center = new Vector(VideoSize.width / 2, VideoSize.height / 2);
 
