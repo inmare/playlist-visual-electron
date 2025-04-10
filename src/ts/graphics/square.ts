@@ -27,7 +27,7 @@ export default class Square extends Layer {
     height: number,
     color: Color | undefined = new Color([255, 255, 255]),
     gradient: Color[] | undefined = undefined,
-    label: string | undefined = "Square"
+    label: string = "Square"
   ) {
     super();
     this.pos = pos;

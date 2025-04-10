@@ -33,7 +33,7 @@ export default class Text extends Layer {
     fontFamily: string,
     fontWeight: PIXI.TextStyleFontWeight,
     lineHeight: number,
-    label: string | undefined = "Text"
+    label: string = "Text"
   ) {
     super();
     this.text = text;

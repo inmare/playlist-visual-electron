@@ -8,7 +8,7 @@ export default class Mask {
   sprite: PIXI.Sprite;
   x: number;
   y: number;
-  label: string | undefined = "Mask";
+  label: string;
 
   /**
    * 요소의 위치에 관계없는 절대적인 경로의 마스크
@@ -18,7 +18,7 @@ export default class Mask {
    * @param y 마스크의 y 좌표. 적용되는 스프라이트의 제일 위쪽이 0이다
    * @param label 레이블, 없으면 "Mask"가 붙음
    */
-  constructor(path: Vector[], label: string | undefined = "Mask") {
+  constructor(path: Vector[], label: string = "Mask") {
     this.path = path;
     this.label = label + getRandomId();
 
