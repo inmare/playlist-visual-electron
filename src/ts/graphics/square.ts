@@ -5,7 +5,6 @@ import { getRandomId } from "@ts/utils/random";
 import Layer from "@ts/graphics/layer";
 
 export default class Square extends Layer {
-  app: PIXI.Application;
   pos: Vector;
   width: number;
   height: number;
@@ -20,26 +19,23 @@ export default class Square extends Layer {
    * @param height 높이
    * @param color 색상, 없으면 흰색이 됨
    * @param gradient 그라데이션, 있으면 기존의 색상은 무시됨
+   * @param label 레이블, 없으면 "Square"가 붙음
    */
   constructor(
-    app: PIXI.Application,
     pos: Vector,
     width: number,
     height: number,
     color: Color | undefined = new Color([255, 255, 255]),
     gradient: Color[] | undefined = undefined,
-    label: string | undefined = undefined
+    label: string | undefined = "Square"
   ) {
     super();
-    this.app = app;
     this.pos = pos;
     this.width = width;
     this.height = height;
     this.color = color;
     this.gradient = gradient;
-    this.label = (label || "Square") + getRandomId();
-
-    this.draw();
+    this.label = label + getRandomId();
   }
 
   set x(value: number) {
@@ -58,7 +54,7 @@ export default class Square extends Layer {
     return this.pos.y;
   }
 
-  draw() {
+  draw(app: PIXI.Application, time: number) {
     const rect = new PIXI.Graphics({ label: this.label });
     rect.fillStyle = this.color;
     // anchor를 중심으로 설정
@@ -69,6 +65,6 @@ export default class Square extends Layer {
       this.height
     );
     rect.fill();
-    this.app.stage.addChild(rect);
+    app.stage.addChild(rect);
   }
 }
