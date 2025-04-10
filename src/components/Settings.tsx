@@ -5,10 +5,13 @@ import InputTextarea from "@components/InputTextarea";
 import { SongsContext, SongsDispatchContext } from "./SongsProvider";
 import InputRange from "./InputRange";
 import { Song, SongText, TextInput } from "@ts/song";
+import { PlaylistTemplate, Element, ElementType } from "@ts/template";
 import { ImageValue } from "@ts/config";
 
 import "@scss/Settings.scss";
 import "@scss/SettingInput.scss";
+import ImageControl from "./controls/ImageControl";
+import TextControl from "./controls/TextControl";
 
 type InputSetting = {
   uiText: string;
@@ -106,6 +109,20 @@ export default function Settings({
   return (
     <>
       <div className="settings">
+        {PlaylistTemplate.element.map((value: Element, index: number) => {
+          if (!value.editable) return null;
+
+          switch (value.type) {
+            case ElementType.Image:
+              return (
+                <ImageControl label="Image" songIdx={songIdx} key={index} />
+              );
+            case ElementType.Text:
+              return <TextControl label="Text" songIdx={songIdx} key={index} />;
+            default:
+              break;
+          }
+        })}
         <div className="setting-input">
           <button onClick={handleFileInput}>이미지 업로드</button>
           <InputTextarea
